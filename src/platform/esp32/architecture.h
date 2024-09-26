@@ -172,6 +172,8 @@
 #define HW_VENDOR meshtastic_HardwareModel_SENSECAP_INDICATOR
 #elif defined(SEEED_XIAO_S3)
 #define HW_VENDOR meshtastic_HardwareModel_SEEED_XIAO_S3
+#elif defined(EF28_BADGE)
+#define HW_VENDOR meshtastic_HardwareModel_EF28_Badge
 #endif
 
 // -----------------------------------------------------------------------------

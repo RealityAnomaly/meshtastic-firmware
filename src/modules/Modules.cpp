@@ -80,6 +80,9 @@
 #if !defined(CONFIG_IDF_TARGET_ESP32S2) && !MESHTASTIC_EXCLUDE_SERIAL
 #include "modules/SerialModule.h"
 #endif
+#if defined(EF28_BADGE)
+#include "modules/ef28/EF28BadgeModule.h"
+#endif
 #endif
 
 #if !MESHTASTIC_EXCLUDE_DROPZONE
@@ -91,6 +94,10 @@
  */
 void setupModules()
 {
+#if defined(EF28_BADGE)
+    ef28BadgeModule = new EF28BadgeModule();
+#endif
+
     if (config.device.role != meshtastic_Config_DeviceConfig_Role_REPEATER) {
 #if (HAS_BUTTON || ARCH_PORTDUINO) && !MESHTASTIC_EXCLUDE_INPUTBROKER
         inputBroker = new InputBroker();
