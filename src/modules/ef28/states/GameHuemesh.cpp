@@ -230,7 +230,7 @@ void GameHuemesh::run() {
 	*/
 
 	dragon.insert(dragon.end(), bar.begin(), bar.end());
-	EFLed.setAll(dragon.data());
+	EFLed.setAll(dragon.data(), false);
 
 	this->tick++;
 }

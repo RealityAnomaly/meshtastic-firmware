@@ -161,7 +161,7 @@ void AnimateSnake::_animateSnake() {
     };
 
     std::rotate(pattern.rbegin(), pattern.rbegin() + this->tick % EFLED_TOTAL_NUM, pattern.rend());
-    EFLed.setAll(pattern.data());
+    EFLed.setAll(pattern.data(), false);
 }
 
 std::unique_ptr<FSMState> AnimateSnake::touchEventAllLongpress() {
@@ -219,5 +219,5 @@ void AnimateSnake::_animateRandom() {
     }
 
 
-    EFLed.setAll(pattern.data());
+    EFLed.setAll(pattern.data(), false);
 }

@@ -109,15 +109,17 @@ uint8_t EFLedClass::getBrightnessPercent() const {
     return (uint8_t) round(FastLED.getBrightness() / (float) this->max_brightness * 100);
 }
 
-void EFLedClass::setAll(const CRGB color[EFLED_TOTAL_NUM]) {
+void EFLedClass::setAll(const CRGB color[EFLED_TOTAL_NUM], bool setDragon) {
     for (uint8_t i = 0; i < EFLED_TOTAL_NUM; i++) {
+        if (!setDragon && i < EFLED_DRAGON_NUM) continue;
         this->led_data[i] = color[i];
     }
     FastLED.show();
 }
 
-void EFLedClass::setAllSolid(const CRGB color) {
+void EFLedClass::setAllSolid(const CRGB color, bool setDragon) {
     for (uint8_t i = 0; i < EFLED_TOTAL_NUM; i++) {
+        if (!setDragon && i < EFLED_DRAGON_NUM) continue;
         this->led_data[i] = color;
     }
     FastLED.show();
@@ -156,6 +158,13 @@ void EFLedClass::setDragonEarTop(const CRGB color) {
 void EFLedClass::setDragon(const CRGB color[EFLED_DRAGON_NUM]) {
     for (uint8_t i = 0; i < EFLED_DRAGON_NUM; i++) {
         this->led_data[EFLED_DARGON_OFFSET + i] = color[i];
+    }
+    FastLED.show();
+}
+
+void EFLedClass::setDragonSolid(const CRGB color) {
+    for (uint8_t i = 0; i < EFLED_DRAGON_NUM; i++) {
+        this->led_data[EFLED_DARGON_OFFSET + i] = color;
     }
     FastLED.show();
 }

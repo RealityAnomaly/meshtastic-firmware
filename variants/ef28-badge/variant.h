@@ -5,12 +5,10 @@
 // #define I2C_SDA1 SDA
 // #define I2C_SCL1 SCL
 
-// #define ADC_CTRL 37
-// #define ADC_CTRL_ENABLED LOW
-// #define BATTERY_PIN 10 // A battery voltage measurement pin, voltage divider connected here to measure battery voltage
-// #define ADC_CHANNEL ADC1_GPIO1_CHANNEL
+#define BATTERY_PIN 10 // A battery voltage measurement pin, voltage divider connected here to measure battery voltage
 // #define ADC_ATTENUATION ADC_ATTEN_DB_2_5 // lower dB for high resistance voltage divider
-// #define ADC_MULTIPLIER 4.9 * 1.045
+#define ADC_MULTIPLIER 1.511;
+#define ADC_CHANNEL ADC1_GPIO10_CHANNEL
 
 #define USE_SX1262
 

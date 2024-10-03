@@ -112,8 +112,10 @@ void DisplayPrideFlag::run() {
     blend(dragon, dragon_next, dragon_now, EFLED_DRAGON_NUM, ((this->tick % 20) / 20.0) * 255);
     fadeLightBy(dragon_now, EFLED_DRAGON_NUM, 128);
 
+#ifndef MESHTASTIC
     // Animate dragon: Finally show it!
     EFLed.setDragon(dragon_now);
+#endif
 
     // Refresh flag periodically
     if (this->tick % (this->switchdelay_ms / this->getTickRateMs()) == 0) {

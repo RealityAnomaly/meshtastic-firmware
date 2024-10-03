@@ -8,6 +8,9 @@ GpioVirtPin ledForceOn, ledBlink;
 #if defined(LED_PIN)
 // Most boards have a GPIO for LED control
 static GpioHwPin ledRawHwPin(LED_PIN);
+#elif defined(EF28_BADGE)
+#include "modules/ef28/EF28BadgeModule.h"
+static EF28BadgeLEDPin ledRawHwPin;
 #else
 static GpioVirtPin ledRawHwPin; // Dummy pin for no hardware
 #endif

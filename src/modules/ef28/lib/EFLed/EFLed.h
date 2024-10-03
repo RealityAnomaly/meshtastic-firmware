@@ -136,14 +136,14 @@ class EFLedClass {
          *
          * @param color Array of colors for each LED
          */
-        void setAll(const CRGB color[EFLED_TOTAL_NUM]);
+        void setAll(const CRGB color[EFLED_TOTAL_NUM], bool setDragon);
 
         /**
          * @brief Sets all LEDs to the given color
          *
          * @param color Color to set
          */
-        void setAllSolid(const CRGB color);
+        void setAllSolid(const CRGB color, bool setDragon);
 
         /**
          * @brief Sets the dragons nose LED to the given color
@@ -193,6 +193,13 @@ class EFLedClass {
          * @param color Array of colors to set
          */
         void setDragon(const CRGB color[EFLED_DRAGON_NUM]);
+
+        /**
+         * @brief Sets all the dragon LEDs to the same color
+         *
+         * @param color Color to set
+         */
+        void setDragonSolid(const CRGB color);
 
         /**
          * @brief Sets all the EF bar LEDs to the given colors

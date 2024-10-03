@@ -1,6 +1,8 @@
 #include "EF28BadgeModule.h"
 #include "MeshService.h"
 
+#include "ButtonThread.h"
+
 #include <modules/ef28/include/FSM.h>
 #include <modules/ef28/src/util.h>
 #include <modules/ef28/lib/EFLed/EFLed.h>
@@ -73,68 +75,71 @@ int32_t EF28BadgeModule::runOnce()
 {
   // Handler: ISR Events
   if (isrEvents.allLongpress) {
-      fsm.queueEvent(FSMEvent::AllLongpress);
-      isrEvents.noseLongpress = false;
-      isrEvents.noseShortpress = false;
-      isrEvents.noseRelease = false;
-      isrEvents.fingerprintLongpress = false;
-      isrEvents.fingerprintShortpress = false;
-      isrEvents.fingerprintRelease = false;
-      isrEvents.allLongpress = false;
-      isrEvents.allShortpress = false;
+    fsm.queueEvent(FSMEvent::AllLongpress);
+    isrEvents.noseLongpress = false;
+    isrEvents.noseShortpress = false;
+    isrEvents.noseRelease = false;
+    isrEvents.fingerprintLongpress = false;
+    isrEvents.fingerprintShortpress = false;
+    isrEvents.fingerprintRelease = false;
+    isrEvents.allLongpress = false;
+    isrEvents.allShortpress = false;
   }
   if (isrEvents.allShortpress) {
-      fsm.queueEvent(FSMEvent::AllShortpress);
-      isrEvents.noseShortpress = false;
-      isrEvents.noseRelease = false;
-      isrEvents.fingerprintShortpress = false;
-      isrEvents.fingerprintRelease = false;
-      isrEvents.allShortpress = false;
+    fsm.queueEvent(FSMEvent::AllShortpress);
+    isrEvents.noseShortpress = false;
+    isrEvents.noseRelease = false;
+    isrEvents.fingerprintShortpress = false;
+    isrEvents.fingerprintRelease = false;
+    isrEvents.allShortpress = false;
   }
   if (isrEvents.fingerprintTouch) {
-      fsm.queueEvent(FSMEvent::FingerprintTouch);
-      isrEvents.fingerprintTouch = false;
+    fsm.queueEvent(FSMEvent::FingerprintTouch);
+    isrEvents.fingerprintTouch = false;
   }
   if (isrEvents.fingerprintLongpress) {
-      fsm.queueEvent(FSMEvent::FingerprintLongpress);
-      isrEvents.fingerprintLongpress = false;
-      isrEvents.fingerprintShortpress = false;
-      isrEvents.fingerprintRelease = false;
+    fsm.queueEvent(FSMEvent::FingerprintLongpress);
+    isrEvents.fingerprintLongpress = false;
+    isrEvents.fingerprintShortpress = false;
+    isrEvents.fingerprintRelease = false;
   }
   if (isrEvents.fingerprintShortpress) {
-      fsm.queueEvent(FSMEvent::FingerprintShortpress);
-      isrEvents.fingerprintShortpress = false;
-      isrEvents.fingerprintRelease = false;
+    fsm.queueEvent(FSMEvent::FingerprintShortpress);
+    isrEvents.fingerprintShortpress = false;
+    isrEvents.fingerprintRelease = false;
   }
   if (isrEvents.fingerprintRelease) {
-      fsm.queueEvent(FSMEvent::FingerprintRelease);
-      isrEvents.fingerprintRelease = false;
+    fsm.queueEvent(FSMEvent::FingerprintRelease);
+    isrEvents.fingerprintRelease = false;
   }
-
   if (isrEvents.noseTouch) {
-      fsm.queueEvent(FSMEvent::NoseTouch);
-      isrEvents.noseTouch = false;
+    fsm.queueEvent(FSMEvent::NoseTouch);
+    isrEvents.noseTouch = false;
   }
   if (isrEvents.noseLongpress) {
-      fsm.queueEvent(FSMEvent::NoseLongpress);
-      isrEvents.noseLongpress = false;
-      isrEvents.noseShortpress = false;
-      isrEvents.noseRelease = false;
+    fsm.queueEvent(FSMEvent::NoseLongpress);
+    isrEvents.noseLongpress = false;
+    isrEvents.noseShortpress = false;
+    isrEvents.noseRelease = false;
+
+    buttonThread->userButtonDoublePressed();
   }
   if (isrEvents.noseShortpress) {
-      fsm.queueEvent(FSMEvent::NoseShortpress);
-      isrEvents.noseShortpress = false;
-      isrEvents.noseRelease = false;
+    fsm.queueEvent(FSMEvent::NoseShortpress);
+    isrEvents.noseShortpress = false;
+    isrEvents.noseRelease = false;
+
+    buttonThread->userButtonPressed();
   }
   if (isrEvents.noseRelease) {
-      fsm.queueEvent(FSMEvent::NoseRelease);
-      isrEvents.noseRelease = false;
+    fsm.queueEvent(FSMEvent::NoseRelease);
+    isrEvents.noseRelease = false;
   }
 
   // Task: Handle FSM
   if (task_fsm_handle < millis()) {
-      fsm.handle();
-      task_fsm_handle = millis() + fsm.getTickRateMs();
+    fsm.handle();
+    task_fsm_handle = millis() + fsm.getTickRateMs();
   }
 
   // // Task: Battery checks
@@ -149,7 +154,7 @@ int32_t EF28BadgeModule::runOnce()
 void EF28BadgeModule::boopupAnimation() {
     CRGB data[EFLED_TOTAL_NUM];
     fill_solid(data, EFLED_TOTAL_NUM, CRGB::Black);
-    EFLed.setAll(data);
+    EFLed.setAll(data, true);
     delay(100);
 
     // Origin point. Power-Button is 11, 25. Make it originate from where the hand is
@@ -175,7 +180,7 @@ void EF28BadgeModule::boopupAnimation() {
             uint8_t value = static_cast<uint8_t>(intensity * 255);
             data[i] = CHSV((hue + static_cast<uint16_t>(distance * 2.0f)) % 255, 240, value);
         }
-        EFLed.setAll(data);
+        EFLed.setAll(data, true);
         delay(15);
     }
     EFLed.clear();
@@ -203,10 +208,30 @@ void EF28BadgeModule::boopupAnimation() {
 
 ProcessMessage EF28BadgeModule::handleReceived(const meshtastic_MeshPacket &mp)
 {
+  auto &p = mp.decoded;
+  if (mp.decoded.portnum == meshtastic_PortNum_TEXT_MESSAGE_APP && mp.to == nodeDB->getNodeNum()) {
+  }
+
   return ProcessMessage::CONTINUE;
 }
 
 bool EF28BadgeModule::wantPacket(const meshtastic_MeshPacket *p)
 {
     return MeshService::isTextPayload(p);
+}
+
+void EF28BadgeLEDPin::set(bool value)
+{
+    if (value != this->value) {
+        this->value = value ? PinState::On : PinState::Off;
+
+        if (value == PinState::On) {
+          EFLed.setDragonSolid(CRGB::Red);
+        } else {
+          EFLed.setDragonSolid(CRGB::Black);
+        }
+
+        if (dependentPin)
+            dependentPin->update();
+    }
 }

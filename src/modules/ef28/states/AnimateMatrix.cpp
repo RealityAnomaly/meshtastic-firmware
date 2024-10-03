@@ -90,7 +90,7 @@ void AnimateMatrix::run() {
     std::rotate(bar.rbegin(), bar.rbegin() + this->tick % EFLED_EFBAR_NUM, bar.rend());
 
     dragon.insert(dragon.end(), bar.begin(), bar.end());
-    EFLed.setAll(dragon.data());
+    EFLed.setAll(dragon.data(), false);
 
     // Prepare next tick
     this->tick++;

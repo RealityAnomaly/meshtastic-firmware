@@ -99,13 +99,13 @@ std::unique_ptr<FSMState> AnimateRainbow::touchEventFingerprintLongpress() {
 }
 
 void AnimateRainbow::_animateRainbow() {
-    EFLed.setAllSolid(CHSV((tick % 256), 255, 255));
+    EFLed.setAllSolid(CHSV((tick % 256), 255, 255), false);
 }
 
 void AnimateRainbow::_animateRainbowCircle() {
     CRGB data[EFLED_TOTAL_NUM];
     fill_rainbow_circular(data, EFLED_TOTAL_NUM, (tick % 128)*2, true);
-    EFLed.setAll(data);
+    EFLed.setAll(data, false);
 }
 
 std::unique_ptr<FSMState> AnimateRainbow::touchEventAllLongpress() {

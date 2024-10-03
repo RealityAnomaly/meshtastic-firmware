@@ -37,6 +37,14 @@ class ButtonThread : public concurrency::OSThread
     void detachButtonInterrupts();
     void storeClickCount();
 
+    // IRQ callbacks
+    static void userButtonPressed() { btnEvent = BUTTON_EVENT_PRESSED; }
+    static void userButtonDoublePressed() { btnEvent = BUTTON_EVENT_DOUBLE_PRESSED; }
+    static void userButtonMultiPressed(void *callerThread); // Retrieve click count from non-static Onebutton while still valid
+    static void userButtonPressedLongStart();
+    static void userButtonPressedLongStop();
+    static void touchPressedLongStart() { btnEvent = BUTTON_EVENT_TOUCH_LONG_PRESSED; }
+
   private:
 #if defined(BUTTON_PIN) || defined(ARCH_PORTDUINO)
     static OneButton userButton; // Static - accessed from an interrupt
@@ -55,14 +63,6 @@ class ButtonThread : public concurrency::OSThread
     volatile int multipressClickCount = 0;
 
     static void wakeOnIrq(int irq, int mode);
-
-    // IRQ callbacks
-    static void userButtonPressed() { btnEvent = BUTTON_EVENT_PRESSED; }
-    static void userButtonDoublePressed() { btnEvent = BUTTON_EVENT_DOUBLE_PRESSED; }
-    static void userButtonMultiPressed(void *callerThread); // Retrieve click count from non-static Onebutton while still valid
-    static void userButtonPressedLongStart();
-    static void userButtonPressedLongStop();
-    static void touchPressedLongStart() { btnEvent = BUTTON_EVENT_TOUCH_LONG_PRESSED; }
 };
 
 extern ButtonThread *buttonThread;

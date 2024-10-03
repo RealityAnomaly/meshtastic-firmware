@@ -61,7 +61,7 @@ void AnimateHeartbeat::run() {
         data[i] = CHSV(this->globals->animHeartbeatHue, 255, value);
     }
 
-    EFLed.setAll(data);
+    EFLed.setAll(data, false);
 
     // Prepare next tick
     this->tick = this->tick + this->globals->animHeartbeatSpeed + 1;
